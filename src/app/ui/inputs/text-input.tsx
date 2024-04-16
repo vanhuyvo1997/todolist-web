@@ -27,10 +27,10 @@ export default function TextInput({ id, type, placeholder }: { id?: string, type
   return <div className="flex bg-white rounded-md items-center">
     <div className="relative w-full">
       <input ref={inputRef} id={id} value={value} onChange={(e) => setValue(e.target.value)} type={isShowPassword ? "text" : type} className="bg-transparent w-full h-10 px-4 pr-6 py-3" />
-      {!isEmpty && <XMarkIcon onClick={handleClearValue} className="absolute right-1 top-1/2 -translate-y-1/2" height={17} />}
+      {!isEmpty && <XMarkIcon title="Clear" onClick={handleClearValue} className="absolute right-1 top-1/2 -translate-y-1/2" height={17} />}
     </div>
     {isPassword && <div className="p-1">
-      {isShowPassword ? <EyeIcon height={17} onClick={toggleShowPassword} /> : <EyeSlashIcon onClick={toggleShowPassword} height={17} />}
+      {isShowPassword ? <EyeIcon title="Hide pasword" height={17} onClick={toggleShowPassword} /> : <EyeSlashIcon title="Show password" onClick={toggleShowPassword} height={17} />}
     </div>}
   </div>
 }  
