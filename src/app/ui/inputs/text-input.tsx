@@ -1,33 +1,36 @@
 "use client"
 import { EyeIcon, EyeSlashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-export default function TextInput({ id, type, placeholder }: { id?: string, type: "text" | "email" | "password", placeholder?: string, name: string}) {
-  const [text, setText] = useState("");
+export default function TextInput({ id, type, placeholder }: { id?: string, type: "text" | "email" | "password", placeholder?: string, name: string }) {
+
+  const [value, setValue] = useState('');
+
+  const isEmpty = value.length === 0;
 
   const isPassword = type === "password";
+
   const [isShowPassword, setIsShowPassword] = useState(false);
-  function handleTogglePassword() {
+  function toggleShowPassword() {
     setIsShowPassword(!isShowPassword);
+    inputRef.current?.focus();
   }
 
-  return <div className="relative">
-    <input className={
-      clsx("w-full rounded-md h-10 px-4 py-3 shadow-md pr-8", {
-        "pr-14": isPassword
-      })
-    }
-      value={text}
-      id={id}
-      type={isPassword ? (isShowPassword ? "text" : "password") : type}
-      onChange={(e) => { setText(e.target.value) }}
-      placeholder={placeholder} />
+  const inputRef = useRef<HTMLInputElement>(null);
+  function handleClearValue() {
+    setValue('');
+    inputRef.current?.focus();
+  }
 
-    {text.length !== 0 && <XMarkIcon onClick={() => setText("")}
-      className={clsx("h-5 w-5 absolute top-1/2 right-2 -translate-y-1/2 hover:cursor-pointer", {
-        "right-8": isPassword,
-      })} />}
-    {isPassword && (isShowPassword ? <EyeIcon className="h-5 w-5 absolute top-1/2 right-2 -translate-y-1/2 hover:cursor-pointer" onClick={handleTogglePassword} /> : <EyeSlashIcon className="h-5 w-5 absolute top-1/2 right-2 -translate-y-1/2" onClick={handleTogglePassword} />)}
+
+  return <div className="flex bg-white rounded-md items-center">
+    <div className="relative w-full">
+      <input ref={inputRef} id={id} value={value} onChange={(e) => setValue(e.target.value)} type={isShowPassword ? "text" : type} className="bg-transparent w-full h-10 px-4 pr-6 py-3" />
+      {!isEmpty && <XMarkIcon onClick={handleClearValue} className="absolute right-1 top-1/2 -translate-y-1/2" height={17} />}
+    </div>
+    {isPassword && <div className="p-1">
+      {isShowPassword ? <EyeIcon height={17} onClick={toggleShowPassword} /> : <EyeSlashIcon onClick={toggleShowPassword} height={17} />}
+    </div>}
   </div>
-}
+}  
