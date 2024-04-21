@@ -1,12 +1,18 @@
-import clsx from "clsx";
+'use client'
 
-export default function Button({ size, submit, content, className }: { size: "S" | "M" | "L", submit: boolean, content: string, className: string }) {
+import clsx from "clsx";
+import { useFormStatus } from "react-dom";
+
+export default function Button({ size, submit, content, className, loadingText = "Processing..." }: { size: "S" | "M" | "L", submit: boolean, content: string, className: string, loadingText?: string }) {
+
+  const { pending } = useFormStatus();
+
   return <button className={
     clsx(
-      "rounded-md shadow-md my-1 text-white hover:bg-black hover:text-white",
+      "rounded-md shadow-md my-1 text-white hover:bg-black hover:text-white disabled:bg-black disabled:text-blue-600",
       {
         "px-3 py-2 text-lg": size === "L",
-        [className] : !!className
+        [className]: !!className
       })
-  } type={submit ? "submit" : "button"}>{content}</button>
+  } type={submit ? "submit" : "button"} disabled={pending}>{!pending ? content : loadingText}</button>
 }
