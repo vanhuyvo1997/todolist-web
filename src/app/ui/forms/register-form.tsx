@@ -2,28 +2,35 @@
 import LabeledInput from "@/app/ui/inputs/labeled-input";
 import Button from "../inputs/button";
 import Link from "next/link";
-import { useEffect } from "react";
-import { register, RegisterState } from "@/app/lib/actions/register-action";
+import { useEffect, useRef } from "react";
+import { registerAction, RegisterState } from "@/app/lib/actions/register-action";
 import { useFormState } from "react-dom";
-import { Bounce, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const initialState: RegisterState = { success: false, message: '', fieldErrors: {} }
 
 export default function RegisterForm() {
+
+  const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => {
     document.getElementById("firstName")?.focus();
   }, []);
 
-  const [state, registerAction] = useFormState(register, initialState);
+  const [state, formAction] = useFormState(registerAction, initialState);
 
   useEffect(() => {
     if (state.success) {
+      (document.getElementById("firstName") as HTMLInputElement).value = "";
+      (document.getElementById("lastName") as HTMLInputElement).value = "";
+      (document.getElementById("email") as HTMLInputElement).value = "";
+      (document.getElementById("password") as HTMLInputElement).value = "";
+      (document.getElementById("confirmPassword") as HTMLInputElement).value = "";
       toast.success(<>{state.message} <Link href="/login" className="text-blue-600 hover:underline">Let&apos;s login now.</Link></>);
     }
   }, [state]);
 
 
-  return <form className="flex flex-col gap-2" action={registerAction}>
+  return <form ref={formRef} className="flex flex-col gap-2" action={formAction}>
     <h1 className='text-center text-2xl my-2 mb-5'>Create new Tasks account</h1>
     <fieldset>
       <LabeledInput id="firstName" name="firstName" type="text" labelContent="Fist name" placeholder="Your first name" errors={state?.fieldErrors?.firstName} />
