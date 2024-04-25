@@ -17,7 +17,6 @@ export default function LoginForm() {
   }, []);
 
   const [formState, formAction] = useFormState(loginAction, initialLoginState);
-  console.log(formState)
 
   return <form className="flex flex-col gap-2" action={formAction}>
     <h1 className='text-center text-2xl my-2 mb-5'>Log in with Tasks account </h1>
