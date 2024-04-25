@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import { registerAction, RegisterState } from "@/app/lib/actions/register-action";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
+import FormErrors from "./form-errors";
 
 const initialState: RegisterState = { success: false, message: '', fieldErrors: {} }
 
@@ -43,9 +44,9 @@ export default function RegisterForm() {
 
       <LabeledInput id="confirmPassword" name="confirmPassword" type="password" labelContent="Confirm password" placeholder="Confirm your password" errors={state?.fieldErrors?.confirmPassword} />
     </fieldset>
-    <div aria-atomic="true" aria-live="polite">
-      {!state.success && state.message && <p className="mt-2 text-sm text-red-500"> {state.message}</p>}
-    </div>
+
+    <FormErrors message={state.message} />
+
     <Button size="L" className="bg-[#6FBC62] my-5" content="Register" submit />
 
     <p className="text-center">or Already had an account? <Link className="text-blue-500 hover:text-blue-300 active:text-orange-400 visited:text-blue-800" href="/login">log in now.</Link></p>

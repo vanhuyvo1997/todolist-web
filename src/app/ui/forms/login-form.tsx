@@ -4,19 +4,29 @@ import Link from "next/link";
 import Button from "../inputs/button";
 import LabeledInput from "../inputs/labeled-input";
 import { useEffect } from "react";
+import { useFormState } from "react-dom";
+import loginAction, { LoginState } from "@/app/lib/actions/login-action";
+import FormErrors from "./form-errors";
+
+
+const initialLoginState: LoginState = { success: false };
 
 export default function LoginForm() {
-  useEffect(()=>{
+  useEffect(() => {
     document.getElementById("email")?.focus();
   }, []);
 
+  const [formState, formAction] = useFormState(loginAction, initialLoginState);
+  console.log(formState)
 
-  return <form className="flex flex-col gap-2">
+  return <form className="flex flex-col gap-2" action={formAction}>
     <h1 className='text-center text-2xl my-2 mb-5'>Log in with Tasks account </h1>
 
-    <LabeledInput id="email" type="text" labelContent="Email" placeholder="Your email" name="email"/>
+    <LabeledInput id="email" type="email" labelContent="Email" placeholder="Your email" name="email" errors={formState.fieldErrors?.email} />
 
-    <LabeledInput id="password" type="password" labelContent="Password" placeholder="Your password" name="password"/>
+    <LabeledInput id="password" type="password" labelContent="Password" placeholder="Your password" name="password" errors={formState.fieldErrors?.password} />
+
+    <FormErrors message={formState.message} />
 
     <Button size="L" className="bg-[#6FBC62] my-5" content="Login" submit />
 
