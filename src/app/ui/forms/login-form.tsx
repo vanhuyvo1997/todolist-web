@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useFormState } from "react-dom";
 import loginAction, { LoginState } from "@/app/lib/actions/login-action";
 import FormErrors from "./form-errors";
+import { useRouter } from "next/navigation";
 
 
 const initialLoginState: LoginState = { success: false };
@@ -16,7 +17,20 @@ export default function LoginForm() {
     document.getElementById("email")?.focus();
   }, []);
 
+  const rounter = useRouter();
   const [formState, formAction] = useFormState(loginAction, initialLoginState);
+
+  useEffect(() => {
+    if (formState.success) {
+
+      localStorage.setItem("accessToken", formState.tokens!.accessToken!);
+      localStorage.setItem("refreshToken", formState.tokens!.refreshToken!);
+
+      rounter.push("/");
+    }
+  }, [formState, rounter]);
+
+
   console.log(formState)
 
   return <form className="flex flex-col gap-2" action={formAction}>
