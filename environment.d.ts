@@ -5,7 +5,7 @@ namespace NodeJS {
     LOGIN_API: string;
     
     AUTHORIZATION_SERVER_BASE_URL: string;
-    MYTASK_ID:string;
-    MYTASK_SECRET:string;
+    AUTH_MYTASK_ID:string;
+    AUTH_MYTASK_SECRET:string;
   }
 }
