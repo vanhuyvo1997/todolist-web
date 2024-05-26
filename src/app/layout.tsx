@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import ToastifyWrapper from './ui/toastify-wraaper'
-import SessionProviderWrapper from './ui/SessionProviderWrapper'
+import ToastifyWrapper from './ui/wrappers/toastify-wraaper'
+import SessionProviderWrapper from './ui/wrappers/SessionProviderWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
