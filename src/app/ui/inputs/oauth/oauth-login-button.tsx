@@ -9,13 +9,13 @@ export default function OAuthLoginButton({ id, name }: { id: string, name: strin
     let icon: ReactNode = null;
     switch (id) {
         case "google": {
-            icon = <GoogleLogo width={24} />; break;
+            icon = <GoogleLogo />; break;
         }
         case "github": {
-            icon = <GithubLogo width={24} />; break;
+            icon = <GithubLogo />; break;
         }
         case "mytask-client": {
-            icon = <MyTaskLogo width={24}/>; break;
+            icon = <MyTaskLogo />; break;
         }
     }
 
