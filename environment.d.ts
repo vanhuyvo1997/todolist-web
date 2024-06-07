@@ -7,5 +7,7 @@ namespace NodeJS {
     AUTHORIZATION_SERVER_BASE_URL: string;
     AUTH_MYTASK_ID:string;
     AUTH_MYTASK_SECRET:string;
+
+    PUBLIC_KEY_FILE:string;
   }
 }
