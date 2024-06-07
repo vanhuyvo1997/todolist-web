@@ -5,14 +5,26 @@
  the route handler(s), signin and signout methods, and more. */
 
 //  You can name this file whatever you want and place it wherever you like.
-
 import NextAuth from "next-auth";
 import { Provider } from "next-auth/providers";
 import Credentials from "next-auth/providers/credentials";
 import Github from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
+import * as jose from 'jose';
+import * as fs from 'fs';
 
 
+type TokenClaim = {
+    jti: string,
+    sub: string,
+    iat: number,
+    exp: number,
+    last_name: string,
+    avatar: string,
+    type: string,
+    first_name: string,
+    authorities: string[]
+}
 
 const providers: Provider[] = [
     {
@@ -31,6 +43,8 @@ const providers: Provider[] = [
                 name: profile.name,
                 email: profile.email,
                 image: profile.picture,
+                refresh_token: "",
+                access_token: "",
             };
         },
     },
@@ -40,9 +54,34 @@ const providers: Provider[] = [
             password: {},
         },
         authorize: async (credentials) => {
-            console.log(credentials);
-            return {};
-        }
+            try {
+                const response = await fetch(process.env.LOGIN_API, {
+                    headers: { "Content-Type": "application/json" },
+                    method: "POST",
+                    body: JSON.stringify({ email: credentials.email, password: credentials.password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const key = fs.readFileSync(process.env.PUBLIC_KEY_FILE, "utf-8");
+                    const ecPublicKey = await jose.importSPKI(key, "RS256");
+                    let verifyResult = await jose.jwtVerify<TokenClaim>(data.accessToken, ecPublicKey);
+
+                    return {
+                        id: verifyResult.payload.jti,
+                        email: verifyResult.payload.sub,
+                        image: verifyResult.payload.avatar,
+                        name: verifyResult.payload.first_name + " " + verifyResult.payload.last_name,
+                        access_token: data.accessToken,
+                        refresh_token: data.refreshToken,
+                        authorities: verifyResult.payload.authorities,
+                    };
+                } else return null;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        },
     }),
     Google,
     Github,
@@ -59,6 +98,24 @@ export const providerMap = providers.map((provider) => {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers,
+    callbacks: {
+        jwt({ token, user }) {
+            if(user){
+                token.access_token = user.access_token;
+                token.refresh_token = user.refresh_token;
+            }
+            
+            return token;
+        },
+        session({ session, token}) {
+            if(token){
+                session.access_token = token.access_token;
+                session.refresh_token = token.refresh_token;
+            }
+            console.log(session);
+            return session;
+        }
+    },
     pages: { signIn: "/login" },
-    debug: true
+    debug: true,
 });
