@@ -45,6 +45,7 @@ const providers: Provider[] = [
                 image: profile.picture,
                 refresh_token: "",
                 access_token: "",
+                authorities: ["USER"]
             };
         },
     },
@@ -66,7 +67,6 @@ const providers: Provider[] = [
                     const key = fs.readFileSync(process.env.PUBLIC_KEY_FILE, "utf-8");
                     const ecPublicKey = await jose.importSPKI(key, "RS256");
                     let verifyResult = await jose.jwtVerify<TokenClaim>(data.accessToken, ecPublicKey);
-
                     return {
                         id: verifyResult.payload.jti,
                         email: verifyResult.payload.sub,
@@ -76,6 +76,8 @@ const providers: Provider[] = [
                         refresh_token: data.refreshToken,
                         authorities: verifyResult.payload.authorities,
                     };
+                } else if (response.status === 404) {
+                    throw new Error("User not found.");
                 } else return null;
             } catch (error) {
                 console.error(error);
@@ -100,20 +102,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     providers,
     callbacks: {
         jwt({ token, user }) {
-            if(user){
+            if (user) {
                 token.access_token = user.access_token;
                 token.refresh_token = user.refresh_token;
             }
-            
             return token;
         },
-        session({ session, token}) {
-            if(token){
+        session({ session, token }) {
+            if (token) {
                 session.access_token = token.access_token;
                 session.refresh_token = token.refresh_token;
             }
             console.log(session);
             return session;
+        },
+        redirect({ url, baseUrl }) {
+            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            if (new URL(url).origin === baseUrl) return url;
+            return baseUrl;
         }
     },
     pages: { signIn: "/login" },

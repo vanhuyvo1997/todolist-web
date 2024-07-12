@@ -6,6 +6,7 @@ declare module "@auth/core/types" {
     interface User {
         access_token: string,
         refresh_token: string,
+        authorities: string[],
     }
 
     interface Session  {

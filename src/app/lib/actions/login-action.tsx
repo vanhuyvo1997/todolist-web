@@ -32,9 +32,14 @@ export default async function loginAction(prevState: LoginState, formData: FormD
     if (!validateFileds.success) {
         return { success: false, message: "Invalid fields", fieldErrors: validateFileds.error.flatten().fieldErrors }
     }
+    const { email, password } = validateFileds.data;
     try {
-        await signIn("credentials", formData);
-        return { success: true, message: "Login successfully." }
+        await signIn("credentials", {
+            redirectTo: "/user",
+            email,
+            password,
+        })
+        return { success: true }
     } catch (error) {
         if (error instanceof CredentialsSignin) return { success: false, message: "Invalid credentials." };
         else throw error;
