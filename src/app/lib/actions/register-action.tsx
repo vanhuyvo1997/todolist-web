@@ -1,8 +1,9 @@
 'use server'
 
 import { z } from "zod";
-import { capitalize, onlyLetterRegex, passwordRegex } from "../utils/utils";
-import { CONTAINS_OTHER_THAN_ALPHABET_ERROR as CONTAINS_NOT_ONLY_ALPHABET_ERROR, INVALID_EMAIL_ERROR, INVALID_PASSWORD_ERROR, LESS_THAN_MINIMUM_ERROR, MAXIMUM_EXCEEDED_ERROR, INVALID_FIELDS_ERROR, PASSWORD_NOT_MATCH_ERROR, REQUIRED_FIELD_ERROR } from "../utils/terms";
+import { capitalize, onlyLetterRegex } from "../utils/utils";
+import { CONTAINS_OTHER_THAN_ALPHABET_ERROR as CONTAINS_NOT_ONLY_ALPHABET_ERROR, MAXIMUM_EXCEEDED_ERROR, INVALID_FIELDS_ERROR, PASSWORD_NOT_MATCH_ERROR, REQUIRED_FIELD_ERROR } from "../utils/terms";
+import { EmailSchema, PasswordSchema } from "../schemas";
 
 export type RegisterState = {
     success: boolean,
@@ -18,6 +19,8 @@ type RegisterFildErrors = {
     confirmPassword?: string[],
 }
 
+
+
 const registerSchema = z.object({
     firstName: z.coerce.string()
         .trim()
@@ -31,13 +34,8 @@ const registerSchema = z.object({
         .max(32, { message: MAXIMUM_EXCEEDED_ERROR.replace(/%d/g, '32') })
         .regex(onlyLetterRegex, { message: CONTAINS_NOT_ONLY_ALPHABET_ERROR })
         .transform(capitalize),
-    email: z.coerce.string()
-        .trim()
-        .email({ message: INVALID_EMAIL_ERROR }),
-    password: z.coerce.string()
-        .trim()
-        .min(8, LESS_THAN_MINIMUM_ERROR.replace(/%d/g, '8'))
-        .regex(passwordRegex, { message: INVALID_PASSWORD_ERROR }),
+    email: EmailSchema,
+    password: PasswordSchema,
     confirmPassword: z.coerce.string()
         .trim(),
 });
