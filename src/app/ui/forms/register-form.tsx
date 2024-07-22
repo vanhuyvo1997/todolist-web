@@ -2,7 +2,7 @@
 import LabeledInput from "@/app/ui/inputs/labeled-input";
 import Button from "../inputs/button";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { registerAction, RegisterState } from "@/app/lib/actions/register-action";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
@@ -11,6 +11,20 @@ import FormErrors from "./form-errors";
 const initialState: RegisterState = { success: false, message: '', fieldErrors: {} }
 
 export default function RegisterForm() {
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmedPassword, setConfirmedPassword] = useState('');
+
+  function clearFields() {
+    setFirstName('');
+    setLastName('');
+    setEmail('');
+    setPassword('');
+    setConfirmedPassword('');
+  }
 
   const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => {
@@ -21,11 +35,7 @@ export default function RegisterForm() {
 
   useEffect(() => {
     if (state.success) {
-      (document.getElementById("firstName") as HTMLInputElement).value = "";
-      (document.getElementById("lastName") as HTMLInputElement).value = "";
-      (document.getElementById("email") as HTMLInputElement).value = "";
-      (document.getElementById("password") as HTMLInputElement).value = "";
-      (document.getElementById("confirmPassword") as HTMLInputElement).value = "";
+      clearFields();
       toast.success(<>{state.message} <Link href="/login" className="text-blue-600 hover:underline">Let&apos;s login now.</Link></>);
     }
   }, [state]);
@@ -34,15 +44,15 @@ export default function RegisterForm() {
   return <form ref={formRef} className="flex flex-col gap-2" action={formAction}>
     <h1 className='text-center text-2xl my-2 mb-5'>Create new Tasks account</h1>
     <fieldset>
-      <LabeledInput id="firstName" name="firstName" type="text" labelContent="Fist name" placeholder="Your first name" errors={state?.fieldErrors?.firstName} />
+      <LabeledInput value={firstName} onChange={setFirstName} id="firstName" name="firstName" type="text" labelContent="Fist name" placeholder="Your first name" errors={state?.fieldErrors?.firstName} />
 
-      <LabeledInput id="lastName" name="lastName" type="text" labelContent="Last name" placeholder="Your last name" errors={state?.fieldErrors?.lastName} />
+      <LabeledInput value={lastName} onChange={setLastName} id="lastName" name="lastName" type="text" labelContent="Last name" placeholder="Your last name" errors={state?.fieldErrors?.lastName} />
 
-      <LabeledInput id="email" name="email" type="email" labelContent="Email" placeholder="Your email" errors={state?.fieldErrors?.email} />
+      <LabeledInput value={email} onChange={setEmail} id="email" name="email" type="email" labelContent="Email" placeholder="Your email" errors={state?.fieldErrors?.email} />
 
-      <LabeledInput id="password" name="password" type="password" labelContent="Password" placeholder="Your password" errors={state?.fieldErrors?.password} />
+      <LabeledInput value={password} onChange={setPassword} id="password" name="password" type="password" labelContent="Password" placeholder="Your password" errors={state?.fieldErrors?.password} />
 
-      <LabeledInput id="confirmPassword" name="confirmPassword" type="password" labelContent="Confirm password" placeholder="Confirm your password" errors={state?.fieldErrors?.confirmPassword} />
+      <LabeledInput value={confirmedPassword} onChange={setConfirmedPassword} id="confirmPassword" name="confirmPassword" type="password" labelContent="Confirm password" placeholder="Confirm your password" errors={state?.fieldErrors?.confirmPassword} />
     </fieldset>
 
     <FormErrors message={state.message} />
